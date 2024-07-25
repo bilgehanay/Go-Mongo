@@ -22,7 +22,7 @@ type Address struct {
 	Country string `json:"country" bson:"country,omitempty"`
 }
 
-type Favorites struct {
+type Favorite struct {
 	ProductID       primitive.ObjectID `json:"productId" bson:"product_id,omitempty"`
 	ProductName     string             `json:"productName" bson:"product_name,omitempty"`
 	ProductCategory int                `json:"productCategory" bson:"product_category,omitempty"`
@@ -36,5 +36,5 @@ type User struct {
 	Password  string             `json:"password" bson:"password" validate:"required,min=6,max=32"`
 	Age       int                `json:"age" bson:"age" validate:"required,min=18,max=120"`
 	Address   Address            `json:"address" bson:"address,omitempty" validate:"required"`
-	Favorites []Favorites        `json:"favorites" bson:"favorites,omitempty"`
+	Favorites []Favorite         `json:"favorites" bson:"favorites,omitempty"`
 }

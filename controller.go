@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go/types"
 	"net/http"
@@ -75,5 +76,43 @@ func deleteUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, createRes(true, "User Is Deleted", nil))
+	return
+}
+
+func getUserFavorites(c *gin.Context) {
+	id := c.Param("uid")
+	result, err := GetUserFavorites(id)
+	fmt.Println(result)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "", result))
+	return
+}
+
+func putUserFavorites(c *gin.Context) {
+	var fav Favorite
+	id := c.Param("uid")
+	if err := c.ShouldBindJSON(&fav); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+
+	if err := PutUserFavorites(id, fav); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "User Favorite Is Saved", nil))
+	return
+}
+
+func deleteUserFavorites(c *gin.Context) {
+	uid, fid := c.Param("uid"), c.Param("fid")
+	if err := DeleteUserFavorites(uid, fid); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "User Favorite Is Deleted", nil))
 	return
 }

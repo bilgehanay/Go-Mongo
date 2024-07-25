@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ajclopez/mgs"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -60,6 +61,7 @@ func GetUsers(query string) ([]*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		var user User
 		err := cur.Decode(&user)
@@ -93,4 +95,52 @@ func DeleteUserByID(id string) error {
 	filter := bson.M{"_id": user_id}
 	_, err = db.DeleteOne(ctx, filter)
 	return err
+}
+
+func GetUserFavorites(id string) ([]Favorite, error) {
+	var user User
+
+	user_id, err := primitive.ObjectIDFromHex(id)
+
+	filter := bson.M{"_id": user_id}
+
+	err = db.FindOne(ctx, filter).Decode(&user)
+	fmt.Println(user.Favorites)
+	if err != nil {
+		return nil, err
+	}
+	return user.Favorites, nil
+}
+
+func PutUserFavorites(id string, fav Favorite) error {
+	user_id, err := primitive.ObjectIDFromHex(id)
+	filter := bson.M{"_id": user_id}
+	update := bson.M{
+		"$push": bson.M{
+			"favorites": fav,
+		},
+	}
+	_, err = db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteUserFavorites(uid, pid string) error {
+	user_id, err := primitive.ObjectIDFromHex(uid)
+	product_id, err := primitive.ObjectIDFromHex(pid)
+	filter := bson.M{"_id": user_id}
+	update := bson.M{
+		"$pull": bson.M{
+			"favorites": bson.M{
+				"product_id": product_id,
+			},
+		},
+	}
+	_, err = db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }
