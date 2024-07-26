@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ajclopez/mgs"
+	"github.com/goccy/go-json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -139,6 +140,32 @@ func DeleteUserFavorites(uid, pid string) error {
 		},
 	}
 	_, err = db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Favorite field changes applying for every user favorites array
+func UpdateFavorite(fav Favorite) error {
+	filter := bson.M{"favorites.product_id": fav.ProductID}
+
+	var fields map[string]interface{}
+	data, _ := json.Marshal(fav)
+	json.Unmarshal(data, &fields)
+
+	updateData := bson.M{}
+	for k, v := range fields {
+		if k != "product_id" {
+			updateData["favorites.$[p]."+k] = v
+		}
+	}
+
+	update := bson.M{"$set": updateData}
+	arrayFilters := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{bson.M{"p.product_id": fav.ProductID}},
+	})
+	_, err := db.UpdateMany(ctx, filter, update, arrayFilters)
 	if err != nil {
 		return err
 	}

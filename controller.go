@@ -116,3 +116,18 @@ func deleteUserFavorites(c *gin.Context) {
 	c.JSON(http.StatusOK, createRes(true, "User Favorite Is Deleted", nil))
 	return
 }
+
+func updateFavorite(c *gin.Context) {
+	var fav Favorite
+	if err := c.ShouldBindJSON(&fav); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	err := UpdateFavorite(fav)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "User Favorite Is Saved", nil))
+	return
+}

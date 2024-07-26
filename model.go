@@ -23,9 +23,9 @@ type Address struct {
 }
 
 type Favorite struct {
-	ProductID       primitive.ObjectID `json:"productId" bson:"product_id,omitempty"`
-	ProductName     string             `json:"productName" bson:"product_name,omitempty"`
-	ProductCategory int                `json:"productCategory" bson:"product_category,omitempty"`
+	ProductID       primitive.ObjectID `json:"product_id,omitempty" bson:"product_id,omitempty"`
+	ProductName     string             `json:"product_name,omitempty" bson:"product_name,omitempty"`
+	ProductCategory int                `json:"product_category,omitempty" bson:"product_category,omitempty"`
 }
 
 type User struct {

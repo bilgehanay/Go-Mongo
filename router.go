@@ -44,6 +44,8 @@ func router() http.Handler {
 		public.GET("/favorite/:uid", getUserFavorites)
 		public.PUT("/favorite/:uid", putUserFavorites)
 		public.DELETE("/favorite/:uid/:fid", deleteUserFavorites)
+
+		public.PUT("/favorite/update", updateFavorite)
 	}
 	return r
 }
