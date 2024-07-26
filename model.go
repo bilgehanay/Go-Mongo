@@ -29,12 +29,13 @@ type Favorite struct {
 }
 
 type User struct {
-	ID        primitive.ObjectID `json:"id,omitempty," bson:"_id,omitempty"`
-	Name      string             `json:"name" bson:"name" validate:"required,min=2,max=32"`
-	Surname   string             `json:"surname" bson:"surname" validate:"required,min=2,max=32"`
-	Email     string             `json:"email" bson:"email" validate:"required,email"`
-	Password  string             `json:"password" bson:"password" validate:"required,min=6,max=32"`
-	Age       int                `json:"age" bson:"age" validate:"required,min=18,max=120"`
-	Address   Address            `json:"address" bson:"address,omitempty" validate:"required"`
-	Favorites []Favorite         `json:"favorites" bson:"favorites,omitempty"`
+	ID        primitive.ObjectID       `json:"id,omitempty," bson:"_id,omitempty"`
+	Name      string                   `json:"name" bson:"name" validate:"required,min=2,max=32"`
+	Surname   string                   `json:"surname" bson:"surname" validate:"required,min=2,max=32"`
+	Email     string                   `json:"email" bson:"email" validate:"required,email"`
+	Password  string                   `json:"password" bson:"password" validate:"required,min=6,max=32"`
+	Age       int                      `json:"age" bson:"age" validate:"required,min=18,max=120"`
+	Address   Address                  `json:"address" bson:"address,omitempty" validate:"required"`
+	Favorites []Favorite               `json:"favorites" bson:"favorites,omitempty"`
+	Comments  []map[string]interface{} `json:"comments" bson:"comments,omitempty"`
 }

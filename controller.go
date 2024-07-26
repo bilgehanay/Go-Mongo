@@ -11,7 +11,7 @@ func createRes(success bool, message string, data interface{}) gin.H {
 	if success {
 		return gin.H{"success": success, "message": message, "data": data}
 	}
-	return gin.H{"success": success, "data": message}
+	return gin.H{"success": success, "message": message}
 }
 
 func createUser(c *gin.Context) {
@@ -129,5 +129,51 @@ func updateFavorite(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, createRes(true, "User Favorite Is Saved", nil))
+	return
+}
+
+func postComment(c *gin.Context) {
+	uid := c.Param("uid")
+	var comment map[string]interface{}
+
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+
+	err := PostPutComment(uid, comment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "User Comment Is Saved", nil))
+	return
+}
+
+func updateComment(c *gin.Context) {
+	uid := c.Param("id")
+	var comment map[string]interface{}
+
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+
+	err := PostPutComment(uid, comment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "User Comment Is Saved", nil))
+	return
+}
+
+func deleteComment(c *gin.Context) {
+	cid := c.Param("cid")
+	if err := DeleteComment(cid); err != nil {
+		c.JSON(http.StatusBadRequest, createRes(false, err.Error(), nil))
+		return
+	}
+	c.JSON(http.StatusOK, createRes(true, "User Comment Is Saved", nil))
 	return
 }

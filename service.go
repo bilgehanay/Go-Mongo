@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/ajclopez/mgs"
 	"github.com/goccy/go-json"
@@ -128,6 +129,7 @@ func PutUserFavorites(id string, fav Favorite) error {
 	return nil
 }
 
+// Arrayden çıkarılması gereken objeyi sahip user id si ve obje id si ile buluyor
 func DeleteUserFavorites(uid, pid string) error {
 	user_id, err := primitive.ObjectIDFromHex(uid)
 	product_id, err := primitive.ObjectIDFromHex(pid)
@@ -139,9 +141,12 @@ func DeleteUserFavorites(uid, pid string) error {
 			},
 		},
 	}
-	_, err = db.UpdateOne(ctx, filter, update)
+	result, err := db.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("favorite not found")
 	}
 	return nil
 }
@@ -170,4 +175,59 @@ func UpdateFavorite(fav Favorite) error {
 		return err
 	}
 	return nil
+}
+
+func PostPutComment(uid string, comment map[string]interface{}) error {
+	user_id, err := primitive.ObjectIDFromHex(uid)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := comment["cid"]; !ok {
+		comment["cid"] = primitive.NewObjectID()
+	} else {
+		comment["cid"], _ = primitive.ObjectIDFromHex(comment["cid"].(string))
+	}
+
+	filter := bson.M{"_id": user_id, "comments.cid": comment["cid"]}
+	update := bson.M{"$set": bson.M{
+		"comments.$[c]": comment,
+	}}
+	arrayFilters := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{bson.M{"c.cid": comment["cid"]}},
+	})
+	result, err := db.UpdateOne(ctx, filter, update, arrayFilters)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		insert := bson.M{
+			"$push": bson.M{
+				"comments": comment,
+			},
+		}
+		_, err = db.UpdateOne(ctx, bson.M{"_id": user_id}, insert)
+	}
+	return err
+}
+
+// Arrayden çıkarılması gereken objeyi direkt olarak obje id si ile buluyor
+func DeleteComment(cid string) error {
+	comment_id, err := primitive.ObjectIDFromHex(cid)
+	filter := bson.M{"comments.cid": comment_id}
+	update := bson.M{
+		"$pull": bson.M{
+			"comments": bson.M{
+				"cid": comment_id,
+			},
+		},
+	}
+	result, err := db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("comment not found")
+	}
+	return err
 }

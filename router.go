@@ -46,6 +46,10 @@ func router() http.Handler {
 		public.DELETE("/favorite/:uid/:fid", deleteUserFavorites)
 
 		public.PUT("/favorite/update", updateFavorite)
+
+		public.POST("/comment/:uid", postComment)
+		public.PUT("/comment/:uid", updateComment)
+		public.DELETE("/comment/:cid", deleteComment)
 	}
 	return r
 }
