@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GO-MONGO/ResponseHandler"
 	"context"
 	"flag"
 	"fmt"
@@ -56,7 +57,7 @@ func init() {
 		fmt.Println("Db can not initilazied")
 	}
 
-	if err := LoadMessages("response.json"); err != nil {
+	if err := ResponseHandler.LoadMessages("ResponseHandler/response.json"); err != nil {
 		panic(err)
 	}
 }

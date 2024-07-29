@@ -1,4 +1,4 @@
-package main
+package ResponseHandler
 
 import (
 	"encoding/json"
@@ -43,15 +43,15 @@ func LoadMessages(filePath string) error {
 
 	errorMap = make(map[int]Message)
 	for _, msg := range data.Errors {
-		errorMap[msg.Status] = msg
+		errorMap[msg.Code] = msg
 	}
 
 	successMessage = data.Success
 	return nil
 }
 
-func HandleError(c *gin.Context, status int, traceId string, data interface{}, errs interface{}) {
-	if msg, ok := errorMap[status]; ok {
+func HandleError(c *gin.Context, code int, traceId string, data interface{}, errs interface{}) {
+	if msg, ok := errorMap[code]; ok {
 		response := ErrorResponse{
 			Success: false,
 			Code:    msg.Code,
