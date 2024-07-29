@@ -55,4 +55,8 @@ func init() {
 	if db == nil {
 		fmt.Println("Db can not initilazied")
 	}
+
+	if err := LoadMessages("response.json"); err != nil {
+		panic(err)
+	}
 }
