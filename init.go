@@ -16,7 +16,8 @@ var (
 	configType string
 	config     ConfigModel
 	e          errgroup.Group
-	db         *mongo.Collection
+	userdb     *mongo.Collection
+	orderdb    *mongo.Collection
 	cl         = make(map[string]*mongo.Collection)
 	ctx        = context.Background()
 )
@@ -51,9 +52,9 @@ func init() {
 			cl[dc.N] = mc.Database(dc.D).Collection(dc.C)
 		}
 	}
-
-	db = cl[config.Mongo["example"].Collection["example"].N]
-	if db == nil {
+	userdb = cl[config.Mongo["example"].Collection["example"].N]
+	orderdb = cl[config.Mongo["example"].Collection["order"].N]
+	if userdb == nil || orderdb == nil {
 		fmt.Println("Db can not initilazied")
 	}
 

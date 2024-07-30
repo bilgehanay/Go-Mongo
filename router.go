@@ -50,6 +50,12 @@ func router() http.Handler {
 		public.POST("/comment/:uid", postComment)
 		public.PUT("/comment/:uid", updateComment)
 		public.DELETE("/comment/:cid", deleteComment)
+
+		public.POST("/order", postOrder)
+		public.PUT("/order", updateOrder)
+		public.GET("/orders", getOrders)
+		public.GET("/order/:id", getUserOrders)
+		public.DELETE("/order/:id", deleteOrder)
 	}
 	return r
 }

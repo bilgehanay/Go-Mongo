@@ -2,6 +2,16 @@ package main
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
+
+type OrderStatus string
+
+const (
+	Pending   OrderStatus = "pending"
+	Completed OrderStatus = "completed"
+	Shipped   OrderStatus = "shipped"
+	Cancelled OrderStatus = "cancelled"
 )
 
 type MongoConfig struct {
@@ -38,4 +48,26 @@ type User struct {
 	Address   Address                  `json:"address" bson:"address,omitempty" validate:"required"`
 	Favorites []Favorite               `json:"favorites" bson:"favorites,omitempty"`
 	Comments  []map[string]interface{} `json:"comments" bson:"comments,omitempty"`
+}
+
+type Order struct {
+	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	UserID    primitive.ObjectID `json:"user_id,omitempty" bson:"user_id,omitempty"`
+	Name      string             `json:"name" bson:"name" validate:"required,min=2,max=32"`
+	Quantity  int                `json:"quantity" bson:"quantity" validate:"required,min=1,max=100"`
+	OrderDate primitive.DateTime `json:"order_date" bson:"order_date" validate:"required"`
+	Price     float64            `json:"price" bson:"price" validate:"required,min=0"`
+	Status    OrderStatus        `json:"status" bson:"status" validate:"required"`
+}
+
+func NewOrder(orderID, userID primitive.ObjectID, name string, quantity int, price float64) Order {
+	return Order{
+		ID:        orderID,
+		UserID:    userID,
+		Name:      name,
+		Quantity:  quantity,
+		OrderDate: primitive.NewDateTimeFromTime(time.Now()),
+		Price:     price,
+		Status:    Pending,
+	}
 }
