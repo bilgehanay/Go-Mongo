@@ -1,10 +1,10 @@
 package main
 
 import (
-	"GO-MONGO/ResponseHandler"
 	"context"
 	"flag"
 	"fmt"
+	"github.com/bilgehanay/Go-Mongo/ResponseHandler"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -58,7 +58,7 @@ func init() {
 		fmt.Println("Db can not initilazied")
 	}
 
-	if err := ResponseHandler.LoadMessages("ResponseHandler/response.json"); err != nil {
+	if err := ResponseHandler.LoadMessages(); err != nil {
 		panic(err)
 	}
 }

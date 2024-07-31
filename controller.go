@@ -1,7 +1,7 @@
 package main
 
 import (
-	"GO-MONGO/ResponseHandler"
+	"github.com/bilgehanay/Go-Mongo/ResponseHandler"
 	"github.com/gin-gonic/gin"
 )
 

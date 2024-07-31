@@ -1,4 +1,4 @@
-module GO-MONGO
+module github.com/bilgehanay/Go-Mongo
 
 go 1.22
 

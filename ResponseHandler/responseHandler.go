@@ -1,10 +1,9 @@
 package ResponseHandler
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"os"
+	"github.com/spf13/viper"
 )
 
 type Message struct {
@@ -25,19 +24,20 @@ type ErrorResponse struct {
 var errorMap map[int]Message
 var successMessage Message
 
-func LoadMessages(filePath string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
+func LoadMessages() error {
+	viper.AddConfigPath("response.json")
+	viper.SetConfigType("json")
+
+	if err := viper.ReadInConfig(); err != nil {
 		return fmt.Errorf("could not open message file: %v", err)
 	}
-	defer file.Close()
 
 	var data struct {
 		Errors  []Message `json:"errors"`
 		Success Message   `json:"success"`
 	}
 
-	if err := json.NewDecoder(file).Decode(&data); err != nil {
+	if err := viper.Unmarshal(&data); err != nil {
 		return fmt.Errorf("could not decode message file: %v", err)
 	}
 
