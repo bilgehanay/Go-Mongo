@@ -1,5 +1,5 @@
-{
-  "handler": [
+
+  [
     {
       "message": "ITEM_NOT_FOUND",
       "code": 3000,
@@ -16,4 +16,4 @@
       "status": 200
     }
   ]
-}
+

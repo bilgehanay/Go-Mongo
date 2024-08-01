@@ -42,15 +42,14 @@ func LoadMessages() error {
 		return err
 	}
 
-	var data struct {
-		Messages []Message `json:"handler"`
-	}
+	var data []Message
 
 	if err := viper.Unmarshal(&data); err != nil {
 		return err
 	}
+	fmt.Println(data)
 	response = make(map[int]Message)
-	for _, msg := range data.Messages {
+	for _, msg := range data {
 		response[msg.Code] = msg
 	}
 	fmt.Println(response)
