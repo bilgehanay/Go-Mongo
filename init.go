@@ -57,7 +57,7 @@ func init() {
 	if userdb == nil || orderdb == nil {
 		fmt.Println("Db can not initilazied")
 	}
-
+	fmt.Println("Db initilazied")
 	if err := ResponseHandler.LoadMessages(); err != nil {
 		panic(err)
 	}

@@ -32,37 +32,33 @@ type Response struct {
 	Errors  interface{} `json:"errors,omitempty"`
 }
 
-var errorMap map[int]Message
-var successMessage Message
+var response map[int]Message
 
 func LoadMessages() error {
 	viper.AddConfigPath("response.json")
 	viper.SetConfigType("json")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("could not open message file: %v", err)
+		return err
 	}
 
 	var data struct {
-		Errors  []Message `json:"errors"`
-		Success Message   `json:"success"`
+		Messages []Message `json:"handler"`
 	}
 
 	if err := viper.Unmarshal(&data); err != nil {
-		return fmt.Errorf("could not decode message file: %v", err)
+		return err
 	}
-
-	errorMap = make(map[int]Message)
-	for _, msg := range data.Errors {
-		errorMap[msg.Code] = msg
+	response = make(map[int]Message)
+	for _, msg := range data.Messages {
+		response[msg.Code] = msg
 	}
-
-	successMessage = data.Success
+	fmt.Println(response)
 	return nil
 }
 
 func HandleError(c *gin.Context, code int, traceId string, data interface{}, errs interface{}) {
-	if msg, ok := errorMap[code]; ok {
+	if msg, ok := response[code]; ok {
 		response := ErrorResponse{
 			Success: false,
 			Code:    msg.Code,
@@ -78,14 +74,16 @@ func HandleError(c *gin.Context, code int, traceId string, data interface{}, err
 }
 
 func HandleSuccess(c *gin.Context, data interface{}, count int) {
-	c.JSON(successMessage.Status, gin.H{
-		"success": true,
-		"errors":  nil,
-		"code":    successMessage.Code,
-		"message": successMessage.Message,
-		"data":    data,
-		"count":   count,
-	})
+	if msg, ok := response[10000]; ok {
+		c.JSON(msg.Status, gin.H{
+			"success": true,
+			"errors":  nil,
+			"code":    msg.Code,
+			"message": msg.Message,
+			"data":    data,
+			"count":   count,
+		})
+	}
 }
 
 func New() *Response {
@@ -100,15 +98,16 @@ func New() *Response {
 }
 
 func (r Response) SendError(c *gin.Context, code int) {
-	err := errorMap[code]
+	err := response[code]
 	r.Message = err.Message
 	r.Code = code
-	fmt.Println(errorMap)
+	fmt.Println(response)
 	c.JSON(err.Status, r)
 	return
 }
 
 func (r Response) SendSuccess(c *gin.Context) {
+	r.Success = true
 	r.Message = "OK"
 	r.Code = 10000
 	c.JSON(http.StatusOK, r)
