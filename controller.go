@@ -8,8 +8,10 @@ import (
 /*#################### USER CONTROLLER ###############################*/
 func createUser(c *gin.Context) {
 	var user User
+	r := ResponseHandler.New()
 	if err := c.ShouldBindJSON(&user); err != nil {
-		ResponseHandler.HandleError(c, 5007, "", nil, gin.H{})
+		r.Errors = gin.H{"user": user}
+		r.SendError(c, 5007)
 		return
 	}
 
@@ -36,12 +38,16 @@ func getUsers(c *gin.Context) {
 
 func getUser(c *gin.Context) {
 	id := c.Param("id")
+	r := ResponseHandler.New()
 	user, err := GetUserByID(id)
 	if err != nil {
-		ResponseHandler.HandleError(c, 5007, "", nil, gin.H{"id": id})
+		r.Errors = gin.H{"id": id}
+		r.SendError(c, 5007)
 		return
 	}
-	ResponseHandler.HandleSuccess(c, user, 1)
+	r.Data = user
+	r.Count = 1
+	r.SendSuccess(c)
 	return
 }
 
